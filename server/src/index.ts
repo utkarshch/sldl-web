@@ -26,10 +26,21 @@ if (!fs.existsSync(binaryPath)) {
 
 console.log(`[server] sldl binary found at: ${binaryPath}`);
 
+import { createAccountRoutes } from "./routes/account.routes.js";
+import { AccountStore } from "./services/account-store.js";
+
 // Initialize services
 const settingsStore = new SettingsStore();
+const accountStore = new AccountStore();
 
 const runner = new SldlRunner((jobId, event, data) => {
+  // ... (omitted for brevity in replacement, but I will target specific lines)
+
+  // Routes
+  app.use("/api/downloads", requireAuth, createDownloadRoutes(runner, settingsStore));
+  app.use("/api/settings", requireAuth, createSettingsRoutes(settingsStore));
+  app.use("/api/accounts", requireAuth, createAccountRoutes(accountStore));
+  app.use("/api/upload", requireAuth, createUploadRoutes());
   switch (event) {
     case "output":
       emitToJob(jobId, "job:output", data);
@@ -68,6 +79,7 @@ import { requireAuth } from "./auth/auth-middleware.js";
 // Routes
 app.use("/api/downloads", requireAuth, createDownloadRoutes(runner, settingsStore));
 app.use("/api/settings", requireAuth, createSettingsRoutes(settingsStore));
+app.use("/api/accounts", requireAuth, createAccountRoutes(accountStore));
 app.use("/api/upload", requireAuth, createUploadRoutes());
 
 app.get("/api/health", (_req, res) => {

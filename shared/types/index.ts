@@ -137,6 +137,18 @@ export interface SldlSettings {
   };
 }
 
+// ---- Account Types ----
+
+export interface SoulseekAccount {
+  id: string;
+  user_id: string;
+  username: string;
+  password?: string; // Optional because we mask it
+  is_active: boolean;
+  created_at: string;
+}
+
+
 // ---- API Types ----
 
 export interface CreateJobRequest {
