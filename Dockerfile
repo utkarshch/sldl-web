@@ -23,10 +23,16 @@ COPY . .
 RUN chmod +x railway-build.sh && ./railway-build.sh
 
 # Build the shared workspace first (types)
-RUN npm run build --workspace=shared
+RUN npm run build --workspace=shared && \
+    echo "✓ Shared build complete" && \
+    ls -la shared/dist || echo "⚠ shared/dist not found"
 
 # Build the server workspace
-RUN npm run build --workspace=server
+RUN npm run build --workspace=server && \
+    echo "✓ Server build complete" && \
+    ls -la server/dist || echo "⚠ server/dist not found" && \
+    ls -la server/dist/index.js || echo "⚠ server/dist/index.js not found"
+
 
 # Expose the API port
 EXPOSE 3001

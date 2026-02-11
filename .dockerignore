@@ -1,0 +1,44 @@
+# Dependencies
+node_modules
+
+# Build outputs (will be generated in container)
+dist
+build
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Development files
+.git
+.gitignore
+.DS_Store
+.vscode
+.idea
+*.swp
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Database & Storage
+*.db
+*.sqlite
+server/data/downloads/
+server/data/uploads/
+server/data/*.json
+
+# Test files
+test-*.sh
+test-*.csv
+
+# Binaries (will be downloaded in container)
+sldl
+sldl.pdb
+
+# Documentation
+README.md
+batchdl.md
