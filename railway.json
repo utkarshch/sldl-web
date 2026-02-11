@@ -5,7 +5,9 @@
         "dockerfilePath": "Dockerfile"
     },
     "deploy": {
-        "startCommand": "node /app/server/dist/index.js",
+        "startCommand": "cd /app/server && node dist/index.js",
+        "healthcheckPath": "/api/health",
+        "healthcheckTimeout": 30,
         "runtime": "V2",
         "numReplicas": 1,
         "sleepApplication": false,
