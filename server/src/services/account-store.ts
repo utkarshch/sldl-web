@@ -1,5 +1,5 @@
 import { supabase } from '../auth/supabase.js';
-import { SoulseekAccount } from '@shared/types/index.js';
+import type { SoulseekAccount } from '@shared/types';
 
 export class AccountStore {
     async getAccounts(userId: string): Promise<SoulseekAccount[]> {
