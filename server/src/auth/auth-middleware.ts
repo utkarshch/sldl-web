@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { getUser } from './supabase';
+import { getUser } from './supabase.js';
 
 // Extend Express Request to include user
 declare global {
