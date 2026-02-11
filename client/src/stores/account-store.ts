@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { api } from '../lib/api-client';
-import { SoulseekAccount } from '@shared/types';
+import type { SoulseekAccount } from '@shared/types';
 
 interface AccountState {
     accounts: SoulseekAccount[];

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api-client";
 import { cn, detectInputType, inputTypeLabel, formatTimestamp } from "@/lib/utils";
 import { useDownloadStore } from "@/stores/download-store";
-import { useAuthStore } from "@/stores/auth-store";
 import { useDashboardSocket } from "@/hooks/use-websocket";
 import {
   Search,
@@ -15,86 +14,6 @@ import {
   Clock,
 } from "lucide-react";
 import type { Job } from "../../../shared/types/index.ts";
-
-function OnboardingCard() {
-  const { setCredentials, setConfigured, setValidating, setError, isValidating, error } =
-    useAuthStore();
-  const [user, setUser] = useState("");
-  const [pass, setPass] = useState("");
-
-  const handleConnect = async () => {
-    if (!user || !pass) return;
-    setValidating(true);
-    setError(null);
-    try {
-      await api.validateCredentials(user, pass);
-      setCredentials(user, pass);
-      setConfigured(true);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Connection failed");
-    } finally {
-      setValidating(false);
-    }
-  };
-
-  return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="w-full max-w-md rounded-2xl bg-surface border border-border shadow-lg shadow-black/[0.03] p-8 space-y-6">
-        <div className="space-y-2">
-          <h1 className="font-display font-bold text-2xl">Welcome to sldl</h1>
-          <p className="text-text-muted text-sm">
-            Connect your Soulseek account to start downloading music.
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-text-secondary">Username</label>
-            <input
-              type="text"
-              value={user}
-              onChange={(e) => setUser(e.target.value)}
-              placeholder="Your Soulseek username"
-              className="w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary-light"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-text-secondary">Password</label>
-            <input
-              type="password"
-              value={pass}
-              onChange={(e) => setPass(e.target.value)}
-              placeholder="Your Soulseek password"
-              onKeyDown={(e) => e.key === "Enter" && handleConnect()}
-              className="w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary-light"
-            />
-          </div>
-
-          {error && (
-            <p className="text-sm text-destructive bg-destructive-light rounded-lg px-3 py-2">
-              {error}
-            </p>
-          )}
-
-          <button
-            onClick={handleConnect}
-            disabled={isValidating || !user || !pass}
-            className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isValidating ? (
-              <span className="flex items-center justify-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Connecting...
-              </span>
-            ) : (
-              "Connect"
-            )}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function StatCard({
   label,
@@ -176,7 +95,7 @@ function JobCard({ job }: { job: Job }) {
                 width: `${Math.round(
                   ((job.progress.completed + job.progress.failed) /
                     job.progress.total) *
-                    100
+                  100
                 )}%`,
               }}
             />
@@ -193,19 +112,11 @@ function JobCard({ job }: { job: Job }) {
 
 export function DashboardPage() {
   const navigate = useNavigate();
-  const { isConfigured } = useAuthStore();
-  const { setJobs, getJobList, dashboardStats, setDashboardStats } =
+  const { setJobs, getJobList, dashboardStats } =
     useDownloadStore();
   const [searchValue, setSearchValue] = useState("");
 
   useDashboardSocket();
-
-  // Check auth status + load jobs on mount
-  useEffect(() => {
-    api.getSettingsStatus().then((s) => {
-      useAuthStore.getState().setConfigured(s.configured);
-    });
-  }, []);
 
   const loadJobs = useCallback(async () => {
     try {
@@ -217,10 +128,8 @@ export function DashboardPage() {
   }, [setJobs]);
 
   useEffect(() => {
-    if (isConfigured) loadJobs();
-  }, [isConfigured, loadJobs]);
-
-  if (!isConfigured) return <OnboardingCard />;
+    loadJobs();
+  }, [loadJobs]);
 
   const jobs = getJobList();
   const activeJobs = jobs.filter(

@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { api } from "@/lib/api-client";
-import { useAuthStore } from "@/stores/auth-store";
 import {
   User,
   Music,
@@ -65,12 +64,6 @@ export function SettingsPage() {
     setSaved(false);
     try {
       await api.updateSettings(settings);
-      // Update auth store if credentials changed
-      const s = settings.soulseek as Record<string, string> | undefined;
-      if (s?.username && s?.password && s.password !== "••••••••") {
-        useAuthStore.getState().setCredentials(s.username, s.password);
-        useAuthStore.getState().setConfigured(true);
-      }
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch {

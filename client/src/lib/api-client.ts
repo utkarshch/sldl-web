@@ -86,4 +86,16 @@ export const api = {
     }
     return res.json();
   },
+
+  // Accounts
+  getAccounts: () => request<any[]>("/accounts"),
+  createAccount: (username: string, password: string) =>
+    request("/accounts", {
+      method: "POST",
+      body: JSON.stringify({ username, password }),
+    }),
+  deleteAccount: (id: string) =>
+    request(`/accounts/${id}`, { method: "DELETE" }),
+  setActiveAccount: (id: string) =>
+    request(`/accounts/${id}/activate`, { method: "PUT" }),
 };
