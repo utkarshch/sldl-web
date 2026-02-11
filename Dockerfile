@@ -22,6 +22,9 @@ COPY . .
 # Download sldl binary using the script
 RUN chmod +x railway-build.sh && ./railway-build.sh
 
+# Build the shared workspace first (types)
+RUN npm run build --workspace=shared
+
 # Build the server workspace
 RUN npm run build --workspace=server
 

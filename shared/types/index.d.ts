@@ -131,6 +131,14 @@ export interface SldlSettings {
         albumArt: "default" | "largest" | "most";
     };
 }
+export interface SoulseekAccount {
+    id: string;
+    user_id: string;
+    username: string;
+    password?: string;
+    is_active: boolean;
+    created_at: string;
+}
 export interface CreateJobRequest {
     input: string;
     inputType?: InputType;
