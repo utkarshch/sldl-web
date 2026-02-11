@@ -268,7 +268,7 @@ export function SettingsPage() {
                     >
                       <span className={cn(
                         "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform",
-                        defaults[toggle.path.split(".")[1]] && "translate-x-4"
+                        !!defaults[toggle.path.split(".")[1]] && "translate-x-4"
                       )} />
                     </button>
                   </label>
@@ -305,7 +305,7 @@ export function SettingsPage() {
                     >
                       <span className={cn(
                         "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform",
-                        defaults[toggle.path.split(".")[1]] && "translate-x-4"
+                        !!defaults[toggle.path.split(".")[1]] && "translate-x-4"
                       )} />
                     </button>
                   </label>
@@ -391,7 +391,7 @@ export function SettingsPage() {
                   >
                     <span className={cn(
                       "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform",
-                      defaults.writePlaylist && "translate-x-4"
+                      !!defaults.writePlaylist && "translate-x-4"
                     )} />
                   </button>
                 </label>
