@@ -1,52 +1,37 @@
 # Dependencies
 node_modules/
-server/node_modules/
+.pnp
+.pnp.js
 
-# Environment files
+# Env
 .env
-.env.local
-server/.env
-client/.env
-
-# Build output
-dist/
-client/dist/
-server/dist/
-
-# Data directories (local only)
-server/data/downloads/*
-server/data/uploads/*
-server/data/profiles/*
-server/data/settings.json
-!server/data/downloads/.gitkeep
-!server/data/uploads/.gitkeep
-!server/data/profiles/.gitkeep
-
-# Database
-*.db
-*.db-wal
-*.db-shm
-
-# Binary
-sldl
-sldl.pdb
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Test artifacts
-test-*.sh
-test-*.csv
-
-# Claude
-.claude/
+.env.*
+!.env.example
 
 # Logs
+logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database & Storage
+*.db
+*.sqlite
+server/data/downloads/
+server/data/uploads/
+server/data/*.json
+
+# Build
+dist/
+build/
+
+# Editor
+.DS_Store
+.idea
+.vscode
+*.swp
+
+# Binaries
+sldl
+sldl.pdb
