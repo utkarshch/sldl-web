@@ -25,6 +25,7 @@ server/data/*.json
 # Build
 dist/
 build/
+*.tsbuildinfo
 
 # Editor
 .DS_Store

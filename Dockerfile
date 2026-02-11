@@ -22,32 +22,20 @@ COPY . .
 # Download sldl binary using the script
 RUN chmod +x railway-build.sh && ./railway-build.sh
 
-# Debug: Show TypeScript version and workspace structure
-RUN echo "=== Debug Info ===" && \
-    npx tsc --version && \
-    echo "Workspace structure:" && \
-    ls -la && \
-    echo "Server structure:" && \
-    ls -la server/ && \
-    echo "Shared structure:" && \
-    ls -la shared/
+# Clean any stale build artifacts that might confuse tsc -b
+RUN rm -rf server/dist shared/dist server/tsconfig.tsbuildinfo shared/tsconfig.tsbuildinfo
 
 # Build the shared workspace first (types)
-RUN echo "=== Building shared workspace ===" && \
-    npm run build --workspace=shared && \
-    echo "✓ Shared build complete" && \
-    ls -la shared/dist || echo "⚠ shared/dist not found"
+RUN npm run build --workspace=shared
 
 # Build the server workspace
-RUN echo "=== Building server workspace ===" && \
-    npm run build --workspace=server && \
-    echo "✓ Server build complete" && \
-    ls -la server/dist
+RUN npm run build --workspace=server
 
-# Verify critical files exist - fail build if not
-RUN test -f server/dist/index.js || (echo "ERROR: server/dist/index.js not found after build!" && exit 1) && \
-    echo "✓ Verified server/dist/index.js exists"
-
+# Verify output exists
+RUN echo "=== server/dist contents ===" && \
+    ls -la server/dist/ && \
+    test -f server/dist/index.js && \
+    echo "✓ server/dist/index.js confirmed"
 
 # Expose the API port
 EXPOSE 3001
@@ -55,5 +43,6 @@ EXPOSE 3001
 # Set environment to production
 ENV NODE_ENV=production
 
-# Start the server
-CMD ["npm", "start", "--workspace=server"]
+# Run from server directory directly (bypass npm workspace resolution)
+WORKDIR /app/server
+CMD ["node", "dist/index.js"]
