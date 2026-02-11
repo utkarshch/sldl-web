@@ -6,10 +6,10 @@
     "esModuleInterop": true,
     "strict": true,
     "outDir": "dist",
-    "rootDir": "src",
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "declaration": true,
+    "baseUrl": ".",
     "paths": {
       "@shared/*": [
         "../shared/*"
@@ -17,7 +17,8 @@
     }
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "../shared/**/*"
   ],
   "exclude": [
     "node_modules",
