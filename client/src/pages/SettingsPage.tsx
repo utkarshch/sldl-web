@@ -420,6 +420,29 @@ export function SettingsPage() {
           )}
         </div>
       </div>
+
+      <div className="border-t border-border pt-6 mt-6">
+        <AppInfo />
+      </div>
+    </div>
+  );
+}
+
+function AppInfo() {
+  const [info, setInfo] = useState<{ version?: string; buildDate?: string; database?: string } | null>(null);
+  useEffect(() => {
+    api.health().then((data: any) => setInfo(data)).catch(() => { });
+  }, []);
+
+  if (!info) return null;
+
+  return (
+    <div className="text-xs text-text-faint flex gap-4">
+      <span>Version: {info.version}</span>
+      <span>Built: {info.buildDate}</span>
+      <span className={cn(info.database === 'connected' ? 'text-green-500' : 'text-red-500')}>
+        DB: {info.database}
+      </span>
     </div>
   );
 }

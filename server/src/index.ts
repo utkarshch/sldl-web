@@ -22,9 +22,9 @@ const binaryPath =
   process.env.SLDL_BINARY_PATH || path.resolve(__dirname, "../../sldl");
 
 if (!fs.existsSync(binaryPath)) {
-  console.error(`[server] sldl binary not found at: ${binaryPath}`);
-  console.error(`[server] Set SLDL_BINARY_PATH env var or place binary in bin/`);
-  process.exit(1);
+  console.error(`[server] WARNING: sldl binary not found at: ${binaryPath}`);
+  console.error(`[server] Downloads will fail until fixed.`);
+  // Do not exit, allow server to start so we can debug paths via health check
 }
 
 console.log(`[server] sldl binary found at: ${binaryPath}`);
@@ -80,11 +80,24 @@ app.use("/api/settings", requireAuth, createSettingsRoutes(settingsStore));
 app.use("/api/accounts", requireAuth, createAccountRoutes(accountStore));
 app.use("/api/upload", requireAuth, createUploadRoutes());
 
-app.get("/api/health", (_req, res) => {
+app.get("/api/health", async (_req, res) => {
+  let dbStatus = "unknown";
+  try {
+    // fast query to check db connection
+    await accountStore.getAccounts("00000000-0000-0000-0000-000000000000");
+    dbStatus = "connected";
+  } catch (err) {
+    dbStatus = "disconnected";
+    console.error("Health check DB error:", err);
+  }
+
   res.json({
     status: "ok",
+    version: process.env.npm_package_version || "1.0.1",
+    buildDate: new Date().toISOString(), // In a real build this would be static
     binary: binaryPath,
     configured: settingsStore.isConfigured(),
+    database: dbStatus
   });
 });
 
