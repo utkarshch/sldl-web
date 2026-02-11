@@ -75,7 +75,7 @@ app.use(cors({
 app.use(express.json());
 
 // Routes
-app.use("/api/downloads", requireAuth, createDownloadRoutes(runner, settingsStore));
+app.use("/api/downloads", requireAuth, createDownloadRoutes(runner, settingsStore, accountStore));
 app.use("/api/settings", requireAuth, createSettingsRoutes(settingsStore));
 app.use("/api/accounts", requireAuth, createAccountRoutes(accountStore));
 app.use("/api/upload", requireAuth, createUploadRoutes());

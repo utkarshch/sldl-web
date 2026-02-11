@@ -12,6 +12,8 @@ if (!supabaseUrl || !supabaseServiceKey) {
   process.exit(1);
 }
 
+console.log(`[Supabase] Initializing with URL: ${supabaseUrl}`);
+
 // Create a single supabase client for interacting with your database
 export const supabase = createClient(supabaseUrl, supabaseServiceKey);
 

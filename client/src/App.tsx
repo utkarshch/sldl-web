@@ -5,6 +5,8 @@ import { NewDownloadPage } from "@/pages/NewDownloadPage";
 import { DownloadDetailPage } from "@/pages/DownloadDetailPage";
 import { HistoryPage } from "@/pages/HistoryPage";
 import { SettingsPage } from "@/pages/SettingsPage";
+import { OnboardingPage } from "@/pages/OnboardingPage";
+import { RequireSelection } from "@/components/RequireSelection";
 import { LoginPage } from "@/pages/LoginPage";
 import { AuthGuard } from "@/components/AuthGuard";
 
@@ -15,7 +17,9 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
 
         <Route element={<AuthGuard />}>
-          <Route element={<AppShell />}>
+          <Route path="/onboarding" element={<OnboardingPage />} />
+
+          <Route element={<RequireSelection><AppShell /></RequireSelection>}>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/new" element={<NewDownloadPage />} />
             <Route path="/downloads/:id" element={<DownloadDetailPage />} />

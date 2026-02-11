@@ -67,4 +67,20 @@ export class AccountStore {
 
         if (error) throw error;
     }
+
+    async getActiveAccount(userId: string): Promise<SoulseekAccount | null> {
+        const { data, error } = await supabase
+            .from('soulseek_accounts')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('is_active', true)
+            .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 is "Relation not found" or "Result contains 0 rows"
+            console.error('Error fetching active account:', error);
+            return null;
+        }
+
+        return data as SoulseekAccount | null;
+    }
 }

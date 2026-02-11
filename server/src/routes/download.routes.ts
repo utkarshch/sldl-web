@@ -1,16 +1,18 @@
 import { Router } from "express";
 import type { SldlRunner } from "../services/sldl-runner.js";
 import type { SettingsStore } from "../services/settings-store.js";
+import type { AccountStore } from "../services/account-store.js";
 import type { CreateJobRequest } from "../types/index.js";
 
 export function createDownloadRoutes(
   runner: SldlRunner,
-  settingsStore: SettingsStore
+  settingsStore: SettingsStore,
+  accountStore: AccountStore
 ): Router {
   const router = Router();
 
   // Create a new download job
-  router.post("/", (req, res) => {
+  router.post("/", async (req, res) => {
     const body = req.body as CreateJobRequest;
 
     if (!body.input) {
@@ -19,14 +21,18 @@ export function createDownloadRoutes(
     }
 
     const settings = settingsStore.get();
-    if (!settings.soulseek.username || !settings.soulseek.password) {
-      res.status(400).json({ error: "Soulseek credentials not configured" });
+
+    // Get user's active soulseek account
+    const account = await accountStore.getActiveAccount(req.user.id);
+
+    if (!account || !account.username || !account.password) {
+      res.status(400).json({ error: "Soulseek credentials not configured. Please add an account." });
       return;
     }
 
     const job = runner.createJob(body, {
-      username: settings.soulseek.username,
-      password: settings.soulseek.password,
+      username: account.username,
+      password: account.password,
       downloadPath: settings.defaults.downloadPath,
     });
 
@@ -71,11 +77,17 @@ export function createDownloadRoutes(
       return;
     }
 
-    const settings = settingsStore.get();
+    // Get user's active soulseek account
+    const account = await accountStore.getActiveAccount(req.user.id);
+    if (!account || !account.username || !account.password) {
+      res.status(400).json({ error: "Soulseek credentials not configured" });
+      return;
+    }
+
     try {
       const output = await runner.preview(input, flags || {}, {
-        username: settings.soulseek.username,
-        password: settings.soulseek.password,
+        username: account.username,
+        password: account.password,
       });
       res.json({ output });
     } catch (err: unknown) {

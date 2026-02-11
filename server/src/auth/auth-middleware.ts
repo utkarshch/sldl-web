@@ -15,6 +15,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
     const user = await getUser(req);
 
     if (!user) {
+      console.log('[Auth] No user found for token');
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
