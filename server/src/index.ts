@@ -63,10 +63,12 @@ const app = express();
 app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000"] }));
 app.use(express.json());
 
+import { requireAuth } from "./auth/auth-middleware.js";
+
 // Routes
-app.use("/api/downloads", createDownloadRoutes(runner, settingsStore));
-app.use("/api/settings", createSettingsRoutes(settingsStore));
-app.use("/api/upload", createUploadRoutes());
+app.use("/api/downloads", requireAuth, createDownloadRoutes(runner, settingsStore));
+app.use("/api/settings", requireAuth, createSettingsRoutes(settingsStore));
+app.use("/api/upload", requireAuth, createUploadRoutes());
 
 app.get("/api/health", (_req, res) => {
   res.json({

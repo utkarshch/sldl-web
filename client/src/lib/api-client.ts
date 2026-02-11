@@ -1,11 +1,28 @@
+import { supabase } from './supabase';
+
 const BASE = "/api";
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+
+  const headers = {
+    "Content-Type": "application/json",
+    ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+    ...options.headers ? options.headers : {},
+  };
+
   const res = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
     ...options,
+    headers,
   });
+
   if (!res.ok) {
+    if (res.status === 401) {
+      await supabase.auth.signOut();
+      window.location.href = '/login';
+      throw new Error("Unauthorized");
+    }
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Request failed: ${res.status}`);
   }

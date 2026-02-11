@@ -1,25 +1,50 @@
-import { create } from "zustand";
+import { create } from 'zustand';
+import { supabase } from '../lib/supabase';
+import { Session, User } from '@supabase/supabase-js';
 
 interface AuthState {
-  username: string;
-  password: string;
-  isConfigured: boolean;
-  isValidating: boolean;
-  error: string | null;
-  setCredentials: (username: string, password: string) => void;
-  setConfigured: (val: boolean) => void;
-  setValidating: (val: boolean) => void;
-  setError: (err: string | null) => void;
+  session: Session | null;
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  initialize: () => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  username: "",
-  password: "",
-  isConfigured: false,
-  isValidating: false,
-  error: null,
-  setCredentials: (username, password) => set({ username, password }),
-  setConfigured: (val) => set({ isConfigured: val }),
-  setValidating: (val) => set({ isValidating: val }),
-  setError: (err) => set({ error: err }),
+  session: null,
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
+
+  initialize: async () => {
+    try {
+      // Get initial session
+      const { data: { session } } = await supabase.auth.getSession();
+      set({
+        session,
+        user: session?.user ?? null,
+        isAuthenticated: !!session,
+        isLoading: false
+      });
+
+      // Listen for changes
+      supabase.auth.onAuthStateChange((_event, session) => {
+        set({
+          session,
+          user: session?.user ?? null,
+          isAuthenticated: !!session,
+          isLoading: false
+        });
+      });
+    } catch (error) {
+      console.error('Auth initialization error:', error);
+      set({ isLoading: false });
+    }
+  },
+
+  signOut: async () => {
+    await supabase.auth.signOut();
+    set({ session: null, user: null, isAuthenticated: false });
+  }
 }));
