@@ -16,4 +16,4 @@ export type {
   CsvUploadResponse,
   CsvMappingRequest,
   Profile,
-} from "@shared/types/index.js";
+} from "@shared/types";
