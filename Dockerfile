@@ -22,16 +22,31 @@ COPY . .
 # Download sldl binary using the script
 RUN chmod +x railway-build.sh && ./railway-build.sh
 
+# Debug: Show TypeScript version and workspace structure
+RUN echo "=== Debug Info ===" && \
+    npx tsc --version && \
+    echo "Workspace structure:" && \
+    ls -la && \
+    echo "Server structure:" && \
+    ls -la server/ && \
+    echo "Shared structure:" && \
+    ls -la shared/
+
 # Build the shared workspace first (types)
-RUN npm run build --workspace=shared && \
+RUN echo "=== Building shared workspace ===" && \
+    npm run build --workspace=shared && \
     echo "✓ Shared build complete" && \
     ls -la shared/dist || echo "⚠ shared/dist not found"
 
 # Build the server workspace
-RUN npm run build --workspace=server && \
+RUN echo "=== Building server workspace ===" && \
+    npm run build --workspace=server && \
     echo "✓ Server build complete" && \
-    ls -la server/dist || echo "⚠ server/dist not found" && \
-    ls -la server/dist/index.js || echo "⚠ server/dist/index.js not found"
+    ls -la server/dist
+
+# Verify critical files exist - fail build if not
+RUN test -f server/dist/index.js || (echo "ERROR: server/dist/index.js not found after build!" && exit 1) && \
+    echo "✓ Verified server/dist/index.js exists"
 
 
 # Expose the API port

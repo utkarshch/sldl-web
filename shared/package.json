@@ -2,7 +2,7 @@
   "name": "shared",
   "version": "1.0.0",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc -b"
   },
   "devDependencies": {
     "typescript": "^5.0.0"
