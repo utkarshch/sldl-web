@@ -25,17 +25,15 @@ RUN chmod +x railway-build.sh && ./railway-build.sh
 # Clean any stale build artifacts that might confuse tsc -b
 RUN rm -rf server/dist shared/dist server/tsconfig.tsbuildinfo shared/tsconfig.tsbuildinfo
 
-# Build the shared workspace first (types)
-RUN npm run build --workspace=shared
+# Build shared types first, then server (run directly via npx to avoid workspace resolution issues)
+WORKDIR /app/shared
+RUN npx tsc -b
 
-# Build the server workspace
-RUN npm run build --workspace=server
+WORKDIR /app/server
+RUN npx tsc -b
 
 # Verify output exists
-RUN echo "=== server/dist contents ===" && \
-    ls -la server/dist/ && \
-    test -f server/dist/index.js && \
-    echo "✓ server/dist/index.js confirmed"
+RUN ls -la dist/ && test -f dist/index.js && echo "BUILD OK: dist/index.js exists"
 
 # Expose the API port
 EXPOSE 3001
@@ -43,6 +41,5 @@ EXPOSE 3001
 # Set environment to production
 ENV NODE_ENV=production
 
-# Run from server directory directly (bypass npm workspace resolution)
-WORKDIR /app/server
+# Start the server (WORKDIR is already /app/server)
 CMD ["node", "dist/index.js"]
