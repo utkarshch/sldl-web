@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Environment files
+.env
+.env.local
+server/.env
+client/.env
+
+# Build output
+dist/
+client/dist/
+server/dist/
+
+# Data directories (local only)
+server/data/downloads/*
+server/data/uploads/*
+server/data/profiles/*
+server/data/settings.json
+!server/data/downloads/.gitkeep
+!server/data/uploads/.gitkeep
+!server/data/profiles/.gitkeep
+
+# Database
+*.db
+*.db-wal
+*.db-shm
+
+# Binary
+sldl
+sldl.pdb
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test artifacts
+test-*.sh
+test-*.csv
+
+# Claude
+.claude/
+
+# Logs
+*.log
