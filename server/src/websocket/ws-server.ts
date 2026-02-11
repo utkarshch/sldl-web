@@ -6,7 +6,12 @@ let io: SocketServer;
 export function initWebSocket(httpServer: HttpServer): SocketServer {
   io = new SocketServer(httpServer, {
     cors: {
-      origin: ["http://localhost:5173", "http://localhost:3000"],
+      origin: [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://soulseekdownload.com",
+        "https://www.soulseekdownload.com",
+      ],
       methods: ["GET", "POST"],
     },
   });

@@ -1,3 +1,13 @@
+// Catch any uncaught errors so we can see them in Railway logs
+process.on("uncaughtException", (err) => {
+  console.error("[FATAL] Uncaught exception:", err);
+});
+process.on("unhandledRejection", (err) => {
+  console.error("[FATAL] Unhandled rejection:", err);
+});
+
+console.log("[server] Starting... Node", process.version, "ENV:", process.env.NODE_ENV);
+
 import express from "express";
 import cors from "cors";
 import { createServer } from "node:http";
@@ -14,6 +24,8 @@ import { createAccountRoutes } from "./routes/account.routes.js";
 import { AccountStore } from "./services/account-store.js";
 import { requireAuth } from "./auth/auth-middleware.js";
 
+console.log("[server] All imports loaded successfully");
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = parseInt(process.env.PORT || "3001", 10);
 
@@ -24,14 +36,14 @@ const binaryPath =
 if (!fs.existsSync(binaryPath)) {
   console.error(`[server] WARNING: sldl binary not found at: ${binaryPath}`);
   console.error(`[server] Downloads will fail until fixed.`);
-  // Do not exit, allow server to start so we can debug paths via health check
 }
 
-console.log(`[server] sldl binary found at: ${binaryPath}`);
+console.log(`[server] sldl binary path: ${binaryPath} (exists: ${fs.existsSync(binaryPath)})`);
 
 // Initialize services
 const settingsStore = new SettingsStore();
 const accountStore = new AccountStore();
+console.log("[server] Services initialized");
 
 const runner = new SldlRunner((jobId, event, data) => {
   switch (event) {
@@ -83,7 +95,6 @@ app.use("/api/upload", requireAuth, createUploadRoutes());
 app.get("/api/health", async (_req, res) => {
   let dbStatus = "unknown";
   try {
-    // fast query to check db connection
     await accountStore.getAccounts("00000000-0000-0000-0000-000000000000");
     dbStatus = "connected";
   } catch (err) {
@@ -94,18 +105,20 @@ app.get("/api/health", async (_req, res) => {
   res.json({
     status: "ok",
     version: process.env.npm_package_version || "1.0.1",
-    buildDate: new Date().toISOString(), // In a real build this would be static
     binary: binaryPath,
     configured: settingsStore.isConfigured(),
-    database: dbStatus
+    database: dbStatus,
+    port: PORT
   });
 });
+
+console.log("[server] Routes configured, starting listener on port", PORT);
 
 // HTTP + WebSocket server
 const httpServer = createServer(app);
 initWebSocket(httpServer);
 
 httpServer.listen(PORT, () => {
-  console.log(`[server] Running on http://localhost:${PORT}`);
+  console.log(`[server] Running on http://0.0.0.0:${PORT}`);
   console.log(`[server] Credentials configured: ${settingsStore.isConfigured()}`);
 });
