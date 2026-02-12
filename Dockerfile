@@ -2,7 +2,7 @@
 FROM node:20-slim
 
 # Install system dependencies required for build and sldl binary
-RUN apt-get update && apt-get install -y curl unzip && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl unzip libicu-dev && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
