@@ -8,15 +8,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "declaration": true,
-    "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "@shared/*": [
-        "../shared/*"
-      ]
-    }
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*"
@@ -24,10 +16,5 @@
   "exclude": [
     "node_modules",
     "dist"
-  ],
-  "references": [
-    {
-      "path": "../shared"
-    }
   ]
 }
